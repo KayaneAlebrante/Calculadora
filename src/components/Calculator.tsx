@@ -28,17 +28,17 @@ export default function Calculator() {
 
         if (input === "CE") {
             setResult("");
-            setOperation(operation.slice(0, -2));
+            setOperation(operation.slice(0, -1));
             return;
         }
 
         if (result) {
-            setOperation(isNaN(parseFloat(input)) ? `${result}${input === "," ? "," : " "}${input}` : input);
+            setOperation(isNaN(parseFloat(input)) ? `${result}${input}` : input);
             setResult("");
             return;
         }
         
-        setOperation(`${operation}${operation.endsWith(",") ? "" : " "}${input}`);
+        setOperation(`${operation}${input}`);
     }
 
     type CalculatorButton = {
