@@ -14,12 +14,26 @@ export function CalculatorProvider({
     children: React.ReactNode;
 }) {
     const [history, setHistory] = React.useState<string[]>([]);
+    const historyStorageKey = "calculator_history";
+
+    React.useEffect(() => {
+        const savedHistory = localStorage.getItem(historyStorageKey);
+        setHistory(savedHistory ? JSON.parse(savedHistory) : []);
+
+        if (!savedHistory) {
+            localStorage.setItem(historyStorageKey, JSON.stringify([]));
+        }
+    }, []);
 
     function updateHistory(operation: string, result: string) {
-        setHistory((prev) => [
-            ...prev,
-            `${operation} = ${result}`,
-        ]);
+        setHistory((prev) => {
+            const updatedHistory = [...prev, `${operation} = ${result}`];
+            localStorage.setItem(
+                historyStorageKey,
+                JSON.stringify(updatedHistory)
+            );
+            return updatedHistory;
+        });
     }
 
     return (
