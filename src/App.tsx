@@ -1,6 +1,7 @@
 import './App.css'
 import Calculator from './components/Calculator';
 import OperationHistory from './components/OperationHistory';
+import { CalculatorProvider } from './context/CalculatorContext';
 
 function App() {
   return (
@@ -13,8 +14,10 @@ function App() {
       bg-[#807ece]
       min-h-screen
       `}>
-      <Calculator/>
-      <OperationHistory/>
+      <CalculatorProvider>
+        <Calculator/>
+        <OperationHistory/>
+      </CalculatorProvider>
     </main>
   );
 }

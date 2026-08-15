@@ -2,16 +2,20 @@ import React from "react";
 import Card from "./Card";
 import { Button } from "./Button";
 import DisplayCalculator from "./DisplayCalculator";
+import { useCalculator } from "../context/CalculatorContext";
 
 export default function Calculator() {
     const [operation, setOperation] = React.useState('');
     const [result, setResult] = React.useState('');
+    const { history, updateHistory } = useCalculator();
 
     function handleButtonClick(input: string) {
         if (input === "=") {  
             const operationResult = eval(operation.replace(/,/g, '.'));
             const parsedResult = parseFloat(operationResult.toFixed(2)).toString().replace('.', ',');
             setResult(parsedResult);
+            updateHistory(operation, parsedResult);
+            setOperation(parsedResult);
             return;
         }
 

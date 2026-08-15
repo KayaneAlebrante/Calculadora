@@ -1,25 +1,24 @@
 import Card from "./Card";
 import Text from "./Text";
+import { useCalculator } from "../context/CalculatorContext";
 
 export default function OperationHistory() {
-    return (
-    <Card className="w-full py-10 px-8">
-        <Text as="h1" variant="heading" className="mb-4">
-            Histórico de Operações
-        </Text>
+    const { history } = useCalculator();
 
-        <ul className="flex flex-col gap-3">
-            <Text as="li">
-                1 + 1 = 2
+    return (
+        <Card className="w-full py-10 px-8">
+            <Text as="h1" variant="heading" className="mb-4">
+                Histórico de Operações
             </Text>
-            <Text as="li">
-                2 x 3 = 6
-            </Text>
-            <Text as="li">
-                10 / 2 = 5
-            </Text>
-        </ul>
-    </Card>
+
+            <ul className="flex flex-col gap-3">
+                {history.map((item, index) => (
+                    <li key={index} className="flex items-center justify-between">
+                        <Text variant="muted">{item}</Text>
+                    </li>
+                ))}
+            </ul>
+        </Card>
     );
 
 }
