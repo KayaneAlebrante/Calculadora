@@ -9,12 +9,10 @@ export default function Card({
      children,
      className
 }: CardProps) {
-
     return (
-        <div className={`bg-[var(--background)] shadow-[var(--shadow)] rounded-2xl 
+        <div className={`bg-[var(--card-background)] shadow-[var(--shadow)] rounded-2xl 
         ${className ? className : ''}`}>
             {children}   
-
         </div>
     )
 }

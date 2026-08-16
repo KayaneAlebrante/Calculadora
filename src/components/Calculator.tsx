@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Card from "./Card";
 import { Button } from "./Button";
 import DisplayCalculator from "./DisplayCalculator";
@@ -7,15 +7,20 @@ import { useCalculator } from "../context/CalculatorContext";
 export default function Calculator() {
     const [operation, setOperation] = React.useState('');
     const [result, setResult] = React.useState('');
-    const { history, updateHistory } = useCalculator();
+    const { updateHistory } = useCalculator();
 
     function handleButtonClick(input: string) {
         if (input === "=") {  
-            const operationResult = eval(operation.replace(/,/g, '.'));
-            const parsedResult = parseFloat(operationResult.toFixed(2)).toString().replace('.', ',');
-            setResult(parsedResult);
-            updateHistory(operation, parsedResult);
-            setOperation(parsedResult);
+            try {
+                const sanitizedOperation = operation.replace(/,/g, '.').replace(/×/g, '*').replace(/÷/g, '/');
+                const operationResult = eval(sanitizedOperation);
+                const parsedResult = parseFloat(operationResult.toFixed(2)).toString().replace('.', ',');
+                setResult(parsedResult);
+                updateHistory(operation, parsedResult);
+                setOperation(parsedResult);
+            } catch {
+                setResult("Erro");
+            }
             return;
         }
 
@@ -45,54 +50,64 @@ export default function Calculator() {
         setOperation(`${operation}${input}`);
     }
 
-    type CalculatorButton = {
-        input: string;
-        variant?: "primary";
-        className?: string;
-    };
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.key >= '0' && e.key <= '9') || ['+', '-', '*', '/', '.', ','].includes(e.key)) {
+                handleButtonClick(e.key === '.' ? ',' : e.key);
+            } else if (e.key === 'Enter' || e.key === '=') {
+                handleButtonClick('=');
+            } else if (e.key === 'Backspace') {
+                handleButtonClick('CE');
+            } else if (e.key === 'Escape') {
+                handleButtonClick('C');
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [operation, result]);
 
-    const buttons: CalculatorButton[][] = [
+    const buttons = [
         [
-            { input: "CE" },
-            { input: "C", className: "flex-1" },
-            { input: "/", variant: "primary" }
+            { input: "CE", variant: "default" as const },
+            { input: "C", className: "flex-1", variant: "default" as const },
+            { input: "/", variant: "primary" as const }
         ],
         [
-            { input: "7" },
-            { input: "8" },
-            { input: "9" },
-            { input: "*", variant: "primary" }
+            { input: "7", variant: "default" as const },
+            { input: "8", variant: "default" as const },
+            { input: "9", variant: "default" as const },
+            { input: "*", variant: "primary" as const }
         ],
         [
-            { input: "4" },
-            { input: "5" },
-            { input: "6" },
-            { input: "-", variant: "primary" }
+            { input: "4", variant: "default" as const },
+            { input: "5", variant: "default" as const },
+            { input: "6", variant: "default" as const },
+            { input: "-", variant: "primary" as const }
         ],
         [
-            { input: "1" },
-            { input: "2" },
-            { input: "3" },
-            { input: "+", variant: "primary" }
+            { input: "1", variant: "default" as const },
+            { input: "2", variant: "default" as const },
+            { input: "3", variant: "default" as const },
+            { input: "+", variant: "primary" as const }
         ],
         [
-            { input: "0", className: "flex-1 h-16" },
-            { input: "," },
-            { input: "=", className: "w-16 h-16 bg-[#7F45E2]" }
+            { input: "0", className: "flex-1 h-16", variant: "default" as const },
+            { input: ",", variant: "default" as const },
+            { input: "=", className: "w-16 h-16", variant: "accent" as const }
         ]
     ];
 
     return (
-        <Card className="flex flex-col gap-[1.625rem] w-[22.25rem] pt-14 px-8 pb-8">
+        <Card className="flex flex-col gap-[1.625rem] w-[22.25rem] pt-10 px-8 pb-8 shadow-xl backdrop-blur-md transition-all duration-300">
             <DisplayCalculator operation={operation} result={result} />
 
             <div className="flex flex-col gap-3">
                 {buttons.map((row, index) => (
-                    <div className="flex gap-3">
+                    <div key={index} className="flex gap-3">
                         {row.map((button) => (
                             <Button
                                 key={button.input}
-                                variant={button.variant ?? "default"}
+                                variant={button.variant}
                                 className={button.className || "w-16 h-16"}
                                 onClick={() => handleButtonClick(button.input)}
                             >
@@ -101,7 +116,6 @@ export default function Calculator() {
                         ))}
                     </div>
                 ))}
-
             </div>
         </Card>
     );

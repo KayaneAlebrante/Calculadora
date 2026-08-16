@@ -1,11 +1,12 @@
 ﻿import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import Text from './Text';
 
-type ButtonVariant = 'default' | 'primary';
+type ButtonVariant = 'default' | 'primary' | 'accent';
 
 const buttonVariants: Record<ButtonVariant, string> = {
-    default: 'bg-[var(--background)]',
-    primary: 'bg-[var(--primary)]',
+    default: 'bg-[linear-gradient(var(--gradient))] hover:bg-[linear-gradient(var(--gradient-hover))] active:scale-95',
+    primary: 'bg-[var(--primary)] text-[var(--text)] hover:opacity-90 active:scale-95 font-medium',
+    accent: 'bg-[var(--accent)] text-white hover:opacity-90 active:scale-95 font-bold shadow-md',
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,15 +25,14 @@ export function Button({
             as="button"
             variant="heading"
             className={`
-                        flex items-center justify-center rounded-xl
-                        p-3 cursor-pointer
-                        text-[var(--text)]
-                        bg-[linear-gradient(var(--gradient))]
-                        hover:bg-[linear-gradient(var(--gradient-hover))]
-                        shadow-[var(--shadow)]
-                        ${buttonVariants[variant]}
-                        ${className}
-                    `.trim()}
+                flex items-center justify-center rounded-2xl
+                p-3 cursor-pointer select-none
+                text-[var(--text)]
+                shadow-[var(--shadow)]
+                transition-all duration-150 ease-in-out
+                ${buttonVariants[variant]}
+                ${className}
+            `.trim()}
             {...props}
         >
             {children}
